@@ -1,5 +1,7 @@
 # Decisions
 
+Copied from the team's working repo. Paths such as `workstreams/`, `reference/` and `~/repos/…` refer to that workspace and are not included here.
+
 | Date | Decision | Why | By |
 |---|---|---|---|
 | 15 Oct | Park the blockchain provenance idea | Tried before (ARCHANGEL). Integrity isn't truth. Records must be correctable and disposable | Hasim, research |

@@ -26,7 +26,7 @@ Everything runs offline from `data/seed/` (invented case, invented records, cach
 With a key and a network it upgrades to live Crossref/OpenAlex and LLM claim splitting.
 
 Design and module contracts: [`ARCHITECTURE.md`](ARCHITECTURE.md).
-Planning, research and the pitch: `~/repos/rimpa-hackathon-2026`.
+Decision and version logs: [`docs/`](../../docs/).
 
 
 ### Stage database

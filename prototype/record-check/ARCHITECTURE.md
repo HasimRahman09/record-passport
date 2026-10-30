@@ -1,7 +1,6 @@
 # Record Check — architecture and module contracts
 
-Prototype for the RIMPA Global Hackathon 2026. Planning repo: `~/repos/rimpa-hackathon-2026`
-(read `ideas/concept-records-gateway.md` and `ideas/scorecard.md` for the why).
+Prototype for the RIMPA Global Hackathon 2026. Why each call was made: [`docs/decisions.md`](../../docs/decisions.md).
 
 **One sentence:** records management decides what to trust by evidence, not by whether AI touched it.
 
@@ -219,7 +218,7 @@ blocked (with reasons), 422 = refused (tier below the rules, self-review, incons
 ### app/streamlit_app.py
 Tabs: **Check** (draft, citation list, highlighted sentences, click → trace panel), **Passport** (six groups, tier chip,
 hash, "export JSON"), **Recall** (register, mark faulty, counts, queue), **Sources** (ROT health, mark a source superseded, recall by source record, queue), **Disposal** (due T0 entries, holds, approve destruction, register), **Register** (authoritative records, apps + default tiers).
-Visual language: see `~/repos/rimpa-hackathon-2026` idea book — chips `supported/weak/unsupported/contradicted`,
+Visual language: see the team's idea book — chips `supported/weak/unsupported/contradicted`,
 tiers T0–T3, and the sentence highlights. Mark seeded data as "example data" in the UI.
 
 ## Conventions

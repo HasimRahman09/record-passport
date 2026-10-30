@@ -1,7 +1,6 @@
 # Versions
 
-One row per version of Record Check. Plan and steps: [`workstreams/07-webapp.md`](../workstreams/07-webapp.md).
-Each version is tagged in git (`v0`, `v1`, …). "Built" says when, so the pre-built-code question can be
+One row per version of Record Check. Each version is tagged in git (`v0`, `v1`, …). "Built" says when, so the pre-built-code question can be
 answered for any version.
 
 | Version | Built | What it is | Tests | Tag | Status |
