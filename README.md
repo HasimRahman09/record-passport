@@ -1,72 +1,67 @@
 # Record Passport
 
-**Finalist, RIMPA Global Hackathon 2026** (sponsored by the National Archives of Australia)
+Our entry to the RIMPA Global Hackathon 2026, where we were finalists. The challenge was how
+records and information management could help organisations deal with bias and misinformation
+in AI output.
 
-> *How might we build information management know-how into AI so that organisations can better
-> recognise and manage bias, misinformation and disinformation?*
+Our answer: judge an AI-assisted document by its evidence, not by whether AI wrote it. Before
+the document is filed as a record, the app
 
-Record Passport decides what to trust from the evidence, not from whether AI touched a document. When an
-AI-assisted document becomes a government record, it does four things:
+1. looks up every citation (Crossref, then OpenAlex) and says whether it was found, didn't match, or doesn't exist
+2. traces each sentence back to source records and marks it supported, weak, unsupported or contradicted.
+   A human-written sentence gets the same test as an AI-written one
+3. files a "passport" with the record: who made it, which model, who reviewed it, and which risk tier it falls in,
+   chained by hash so later edits show up
+4. if a model is later found faulty, or a source record is replaced, finds every record that depended on it
+   and queues the risky ones for another review
 
-1. **Checks citations.** It looks up every reference in Crossref and OpenAlex. Each one comes back as found, mismatch, not found or not checked.
-2. **Weighs the evidence.** It traces each sentence back to authoritative source records. Each sentence comes back as supported, weak, unsupported or contradicted. AI-written and human-written sentences get the same test.
-3. **Issues a passport.** It files a record package covering who, what, which model, why, how and who reviewed it. The package is tiered by the National Archives of Australia's risk rule and sealed into a hash chain.
-4. **Recalls.** If a model is later found faulty, or a source record is superseded, it finds every record that depended on it and queues the risky ones for re-review.
+There's a live version at [record-check.vercel.app](https://record-check.vercel.app). All the data in it is made up.
 
-**Live app:** [record-check.vercel.app](https://record-check.vercel.app). It runs on invented example data.
+![A record passport](docs/demo/skin-passport.png)
 
-![Record passport](docs/demo/skin-passport.png)
-
-| Check a document | Information manager dashboard | Recall |
+| Checking a document | Dashboard | Recall |
 |---|---|---|
 | ![Check](docs/demo/skin-check.png) | ![Dashboard](docs/demo/skin-dashboard.png) | ![Recall](docs/demo/skin-recall.png) |
 
-## How it's built
+## How it's put together
 
 ```
-web/                      Next.js (TypeScript) app; types generated from the API's OpenAPI schema
 prototype/record-check/
-  recordcheck/            the engine: a plain Python package with no UI code
-  api/                    FastAPI wrapper, deployed as Vercel functions
-  app/                    Streamlit console (used for the stage demo)
-  tests/                  pytest suite (284 tests), runs fully offline
-docs/                     decision log, version log, screenshots
+  recordcheck/   the engine, a plain Python package
+  api/           FastAPI around the engine (runs as Vercel functions)
+  app/           Streamlit console we used on stage
+  tests/         284 tests, all offline
+web/             Next.js front end
+docs/            decision log, version log, screenshots
 ```
 
-- **The engine enforces the rules, not the UI.** The filing gate, tier floor and reviewer/author separation
-  are checked inside the engine. The API re-derives citations and verdicts instead of trusting what a
-  caller sends. This means any system that plugs in gets the same guarantees.
-- **The model stays out of the accuracy path.** Claude is used only to split text into claims, and there is
-  a deterministic offline fallback. Lookups, linking rules, tiering and hashing are all plain, tested
-  Python.
-- **Everything works offline.** Seed data and cached lookups mean the demo and the tests never need a
-  network or an API key. Live Crossref, OpenAlex and the LLM are upgrades, never requirements.
-- **Edge cases are tracked.** [`EDGE_CASES.md`](prototype/record-check/EDGE_CASES.md) lists every edge case,
-  and a test fails if the list and the code drift apart.
-- **Storage:** SQLite locally, Postgres (Neon) in production, with a separate database branch for the stage
-  demo so rehearsals never touch real data.
+A few choices worth knowing about:
 
-Module contracts are in [`ARCHITECTURE.md`](prototype/record-check/ARCHITECTURE.md). Why each call was made
-is in the [decision log](docs/decisions.md), and what shipped when is in the [version log](docs/versions.md).
+- The rules live in the engine, not the UI. The engine refuses to file a record below its tier or
+  signed off by its own author, and the API recomputes verdicts rather than trusting what it's sent.
+- Claude is only used to split text into claims, and there's a rule-based fallback when there's no
+  key or no network. Everything else is ordinary code, so the demo and the tests run offline.
+- `EDGE_CASES.md` lists every edge case we thought of, and a test fails if it gets out of step with the code.
+- SQLite locally, Postgres on Neon in production, and a separate database branch for the stage demo.
 
-## Run it
+The [decision log](docs/decisions.md) has the reasoning behind most of this, day by day.
+
+## Running it
 
 ```bash
 cd prototype/record-check
 uv sync
-uv run pytest -q                                   # offline, no key needed
-uv run uvicorn api.main:app --reload               # API at http://127.0.0.1:8000/docs
-uv run streamlit run app/streamlit_app.py          # console
+uv run pytest -q
+uv run uvicorn api.main:app --reload        # API on http://127.0.0.1:8000/docs
+uv run streamlit run app/streamlit_app.py   # console
 ```
 
 ```bash
-cd web && npm install && npm run dev               # web app (expects the API on :8000)
+cd web && npm install && npm run dev        # front end; expects the API on :8000
 ```
 
-## Team and credits
+## Team
 
-Built in three days for RIMPA Live 2026 (19–21 October, Sydney) by a team of three. **Hasim Rahman** was
-the data engineer and sole developer; two technology consultants led the storytelling and the
-records-management research.
-
-The commit history here is the product code, extracted from the team's working repo.
+Three of us built it over 19–21 October 2026 for RIMPA Live in Sydney. I wrote the code, and two
+technology consultants led the pitch and the records research. This repo is the product code taken
+out of our team workspace, with its history kept.
